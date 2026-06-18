@@ -1,72 +1,25 @@
-require('dotenv').config()
-const express    = require('express')
-const http       = require('http')
-const cors       = require('cors')
-const helmet     = require('helmet')
-const morgan     = require('morgan')
-const rateLimit  = require('express-rate-limit')
+NODE_ENV=production
 
-const connectDB  = require('./config/db')
-const initSocket = require('./sockets/tracking.socket')
+MONGO
+DB_URI = mongodb + srv://Gibson:Hatrick77@cluster0.udpjlbu.mongodb.net/flash-shipping?retryWrites=true&w=majority
 
-// Routes
-const authRoutes         = require('./routes/auth.routes')
-const shipmentRoutes     = require('./routes/shipment.routes')
-const pricingRoutes      = require('./routes/pricing.routes')
-const courierRoutes      = require('./routes/courier.routes')
-const notificationRoutes = require('./routes/notification.routes')
-const documentRoutes     = require('./routes/document.routes')
-const adminRoutes        = require('./routes/admin.routes')
-const uploadRoutes        = require('./routes/upload.routes')
+JWT_SECRET=your_super_secret_jwt_key_change_this
+JWT_EXPIRES_IN=7d
+JWT_REFRESH_SECRET=your_refresh_secret_key
+JWT_REFRESH_EXPIRES_IN=30d
 
-const app    = express()
-const server = http.createServer(app)
+SENDGRID_API_KEY=SG.xxxxxxxxxxxxxxxxxxxxxxxxxx
+EMAIL_FROM=noreply@flashshipping.com
 
-// Connect DB
-connectDB()
+TWILIO_ACCOUNT_SID=ACxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE=+1234567890
 
-// Init Socket.IO
-initSocket(server)
+STRIPE_SECRET_KEY=sk_test_xxxxxxxxxxxxxxxxxxxxxxxx
+STRIPE_WEBHOOK_SECRET=whsec_xxxxxxxxxxxxxxxxxxxxxxxx
 
-// ── Middleware ────────────────────────────────────────────────
-app.use(helmet())
-app.use(cors({
-  origin:      process.env.CLIENT_URL || 'http://localhost:3000',
-  credentials: true,
-}))
-app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'))
-app.use(express.json({ limit: '10mb' }))
-app.use(express.urlencoded({ extended: true }))
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
 
-// Global rate limiter
-app.use('/api', rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 min
-  max:      200,
-  message:  { message: 'Too many requests. Please try again later.' },
-}))
-
-// ── Routes ────────────────────────────────────────────────────
-app.use('/api/auth',          authRoutes)
-app.use('/api/shipments',     shipmentRoutes)
-app.use('/api/pricing',       pricingRoutes)
-app.use('/api/couriers',      courierRoutes)
-app.use('/api/notifications', notificationRoutes)
-app.use('/api/documents',     documentRoutes)
-app.use('/api/admin',         adminRoutes)
-app.use('/api/upload',        uploadRoutes)
-
-// Health check
-app.get('/health', (_, res) => res.json({ status: 'ok', service: 'Flash Shipping API', time: new Date() }))
-
-// 404
-app.use((req, res) => res.status(404).json({ message: 'Route not found' }))
-
-// Global error handler
-app.use((err, req, res, next) => {
-  console.error('[ERROR]', err.message)
-  res.status(err.status || 500).json({ message: err.message || 'Internal server error' })
-})
-
-// ── Start ─────────────────────────────────────────────────────
-const PORT = process.env.PORT || 5000
-server.listen(PORT, () => console.log(`⚡ Flash API running on port ${PORT}`))
+CLIENT_URL=https://your-frontend.onrender.com
