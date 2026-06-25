@@ -11,7 +11,7 @@ const stopSchema = new mongoose.Schema({
 const shipmentSchema = new mongoose.Schema({
   trackingCode: {
     type:    String,
-    unique:  true,
+    unique:  true, // This natively creates the unique index safely
     default: () => `FLS-${new Date().getFullYear()}-${nanoid(6).toUpperCase()}`,
   },
 
@@ -80,8 +80,8 @@ const shipmentSchema = new mongoose.Schema({
   notes: { type: String },
 }, { timestamps: true })
 
+// Keeping your other necessary secondary indexes
 shipmentSchema.index({ userId: 1, createdAt: -1 })
-shipmentSchema.index({ trackingCode: 1 })
 shipmentSchema.index({ courierId: 1 })
 shipmentSchema.index({ status: 1 })
 
